@@ -118,6 +118,20 @@
             box-shadow: 0 10px 20px rgba(255, 215, 0, 0.3);
         }
 
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading-message {
+            text-align: center;
+            color: #ffd700;
+            font-style: italic;
+            margin-top: 20px;
+            display: none;
+        }
+
         /* PDF Styles */
         .pdf-page {
             width: 210mm;
@@ -128,12 +142,9 @@
             font-family: Georgia, serif;
             position: relative;
             page-break-after: always;
-            display: none;
-            overflow: hidden;
-        }
-
-        .pdf-page.generating {
             display: block;
+            overflow: hidden;
+            margin-bottom: 20px;
         }
 
         .pdf-background {
@@ -162,10 +173,6 @@
             color: #ffd700;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
             margin-bottom: 20px;
-            background: linear-gradient(45deg, #ffd700, #ffed4e);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
 
         .transmission-section {
@@ -266,6 +273,20 @@
             z-index: 10;
         }
 
+        /* Hide PDF content by default */
+        #pdfContent {
+            position: absolute;
+            left: -9999px;
+            top: -9999px;
+        }
+
+        /* Show PDF content during generation */
+        #pdfContent.generating {
+            position: static;
+            left: auto;
+            top: auto;
+        }
+
         @media print {
             .pdf-page {
                 display: block !important;
@@ -298,9 +319,13 @@
             <!-- Blessing cards will be generated here -->
         </div>
 
-        <button class="generate-btn" onclick="generatePDF()">
+        <button class="generate-btn" onclick="generatePDF()" id="generateBtn">
             ✨ Generate Sacred PDF ✨
         </button>
+
+        <div class="loading-message" id="loadingMessage">
+            ✨ Channeling sacred energies into PDF... Please wait... ✨
+        </div>
     </div>
 
     <!-- PDF Content (hidden) -->
@@ -368,100 +393,125 @@
             }
         }
 
-        function generatePDF() {
+        async function generatePDF() {
+            const generateBtn = document.getElementById('generateBtn');
+            const loadingMessage = document.getElementById('loadingMessage');
             const whatsapp = document.getElementById('whatsapp').value || '[WhatsApp Number]';
             const email = document.getElementById('email').value;
             
-            // Create PDF content
-            const pdfContent = document.getElementById('pdfContent');
-            pdfContent.innerHTML = '';
+            // Disable button and show loading
+            generateBtn.disabled = true;
+            loadingMessage.style.display = 'block';
             
-            for (let i = 1; i <= 30; i++) {
-                const blessing = document.getElementById(`blessing${i}`).value;
-                const dayOfWeek = daysOfWeek[(i - 1) % 7];
-                const triggerIndex = Math.floor((i - 1) / 5) % triggers.length;
-                const trigger = triggers[triggerIndex];
+            try {
+                // Create PDF content
+                const pdfContent = document.getElementById('pdfContent');
+                pdfContent.innerHTML = '';
+                pdfContent.className = 'generating';
                 
-                const page = document.createElement('div');
-                page.className = 'pdf-page generating';
-                
-                page.innerHTML = `
-                    <div class="pdf-background"></div>
+                for (let i = 1; i <= 30; i++) {
+                    const blessing = document.getElementById(`blessing${i}`).value;
+                    const dayOfWeek = daysOfWeek[(i - 1) % 7];
+                    const triggerIndex = Math.floor((i - 1) / 5) % triggers.length;
+                    const trigger = triggers[triggerIndex];
                     
-                    <div class="pdf-header">
-                        <div class="day-title">🌟 DAY ${i} - ${dayOfWeek} 🌟</div>
-                    </div>
+                    const page = document.createElement('div');
+                    page.className = 'pdf-page';
                     
-                    <div class="transmission-section">
-                        <div class="transmission-title">💫 MARIA'S SACRED TRANSMISSION FOR YOU:</div>
-                        <div class="blessing-text">"${blessing}"</div>
-                        <div class="lineage-note">~ Channeled through 1500 years of Orthodox power ~</div>
-                    </div>
+                    page.innerHTML = `
+                        <div class="pdf-background"></div>
+                        
+                        <div class="pdf-header">
+                            <div class="day-title">🌟 DAY ${i} - ${dayOfWeek} 🌟</div>
+                        </div>
+                        
+                        <div class="transmission-section">
+                            <div class="transmission-title">💫 MARIA'S SACRED TRANSMISSION FOR YOU:</div>
+                            <div class="blessing-text">"${blessing}"</div>
+                            <div class="lineage-note">~ Channeled through 1500 years of Orthodox power ~</div>
+                        </div>
+                        
+                        <div class="divine-message">
+                            <div class="section-title">🎁 DIVINE MESSAGE:</div>
+                            "You were guided to this page for a reason. The Universe orchestrated this moment because you're READY for your million-dollar breakthrough. This blessing resonated with you TODAY - that's divine timing, not coincidence."
+                        </div>
+                        
+                        <div class="intention-section">
+                            <div class="section-title">📝 MY MONEY INTENTION TODAY:</div>
+                            <div class="write-line"></div>
+                            <div class="write-line"></div>
+                        </div>
+                        
+                        <div class="signs-section">
+                            <div class="section-title">💰 ABUNDANCE SIGNS I NOTICED:</div>
+                            <div style="margin-bottom: 8px;">Morning: <span style="border-bottom: 1px solid #ffd700; display: inline-block; width: 200px; height: 16px;"></span></div>
+                            <div style="margin-bottom: 8px;">Afternoon: <span style="border-bottom: 1px solid #ffd700; display: inline-block; width: 200px; height: 16px;"></span></div>
+                            <div>Evening: <span style="border-bottom: 1px solid #ffd700; display: inline-block; width: 200px; height: 16px;"></span></div>
+                        </div>
+                        
+                        <div class="gratitude-section">
+                            <div class="section-title">✨ GRATITUDE FOR WHAT I RECEIVED:</div>
+                            <div class="write-line"></div>
+                        </div>
+                        
+                        <div class="cta-section">
+                            <div class="cta-title">🌟 FEELING THE CALL FOR MORE?</div>
+                            <div style="margin-bottom: 10px;">This blessing is just the beginning... There are deeper layers waiting.</div>
+                            <div>When you're ready for the FULL activation → Text Maria: ${whatsapp}</div>
+                            <div class="ps-note">✨ P.S. The fact that you felt drawn to page ${i} tells Maria everything about your spiritual readiness level... 😉</div>
+                        </div>
+                        
+                        ${i % 5 === 0 ? `<div style="margin-top: 15px; padding: 10px; background: rgba(255, 215, 0, 0.1); border-radius: 8px; text-align: center; font-size: 12px; color: #ffd700;">${trigger}</div>` : ''}
+                        
+                        <div class="watermark">
+                            📧 ${email}<br>
+                            📱 ${whatsapp}
+                        </div>
+                        
+                        <div class="page-number">${i}</div>
+                    `;
                     
-                    <div class="divine-message">
-                        <div class="section-title">🎁 DIVINE MESSAGE:</div>
-                        "You were guided to this page for a reason. The Universe orchestrated this moment because you're READY for your million-dollar breakthrough. This blessing resonated with you TODAY - that's divine timing, not coincidence."
-                    </div>
-                    
-                    <div class="intention-section">
-                        <div class="section-title">📝 MY MONEY INTENTION TODAY:</div>
-                        <div class="write-line"></div>
-                        <div class="write-line"></div>
-                    </div>
-                    
-                    <div class="signs-section">
-                        <div class="section-title">💰 ABUNDANCE SIGNS I NOTICED:</div>
-                        <div style="margin-bottom: 8px;">Morning: <span style="border-bottom: 1px solid #ffd700; display: inline-block; width: 200px; height: 16px;"></span></div>
-                        <div style="margin-bottom: 8px;">Afternoon: <span style="border-bottom: 1px solid #ffd700; display: inline-block; width: 200px; height: 16px;"></span></div>
-                        <div>Evening: <span style="border-bottom: 1px solid #ffd700; display: inline-block; width: 200px; height: 16px;"></span></div>
-                    </div>
-                    
-                    <div class="gratitude-section">
-                        <div class="section-title">✨ GRATITUDE FOR WHAT I RECEIVED:</div>
-                        <div class="write-line"></div>
-                    </div>
-                    
-                    <div class="cta-section">
-                        <div class="cta-title">🌟 FEELING THE CALL FOR MORE?</div>
-                        <div style="margin-bottom: 10px;">This blessing is just the beginning... There are deeper layers waiting.</div>
-                        <div>When you're ready for the FULL activation → Text Maria: ${whatsapp}</div>
-                        <div class="ps-note">✨ P.S. The fact that you felt drawn to page ${i} tells Maria everything about your spiritual readiness level... 😉</div>
-                    </div>
-                    
-                    ${i % 5 === 0 ? `<div style="margin-top: 15px; padding: 10px; background: rgba(255, 215, 0, 0.1); border-radius: 8px; text-align: center; font-size: 12px; color: #ffd700;">${trigger}</div>` : ''}
-                    
-                    <div class="watermark">
-                        📧 ${email}<br>
-                        📱 ${whatsapp}
-                    </div>
-                    
-                    <div class="page-number">${i}</div>
-                `;
-                
-                pdfContent.appendChild(page);
-            }
-            
-            // Generate PDF
-            const opt = {
-                margin: 0,
-                filename: 'Sacred_Million_Dollar_Activation_Planner.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { 
-                    scale: 2,
-                    useCORS: true,
-                    letterRendering: true
-                },
-                jsPDF: { 
-                    unit: 'mm', 
-                    format: 'a4', 
-                    orientation: 'portrait' 
+                    pdfContent.appendChild(page);
                 }
-            };
-            
-            html2pdf().set(opt).from(pdfContent).save().then(() => {
+                
+                // Wait for content to render
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Generate PDF
+                const opt = {
+                    margin: 0,
+                    filename: 'Sacred_Million_Dollar_Activation_Planner.pdf',
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { 
+                        scale: 2,
+                        useCORS: true,
+                        letterRendering: true,
+                        backgroundColor: null,
+                        allowTaint: true,
+                        scrollX: 0,
+                        scrollY: 0
+                    },
+                    jsPDF: { 
+                        unit: 'mm', 
+                        format: 'a4', 
+                        orientation: 'portrait' 
+                    }
+                };
+                
+                await html2pdf().set(opt).from(pdfContent).save();
+                
                 // Clean up
                 pdfContent.innerHTML = '';
-            });
+                pdfContent.className = '';
+                
+            } catch (error) {
+                console.error('PDF generation error:', error);
+                alert('Ошибка при генерации PDF. Попробуйте еще раз.');
+            } finally {
+                // Re-enable button and hide loading
+                generateBtn.disabled = false;
+                loadingMessage.style.display = 'none';
+            }
         }
 
         // Initialize on page load
