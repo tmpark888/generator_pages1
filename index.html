@@ -546,8 +546,9 @@
                 
                 // Generate PDF
                 await html2pdf()
-                    .set(opt)
-                    .from(pdfContent)
+    .set(opt)
+    .from(pdfContent.cloneNode(true))
+
                     .toPdf()
                     .get('pdf')
                     .then(function (pdf) {
