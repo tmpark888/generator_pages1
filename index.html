@@ -486,29 +486,31 @@
                     blessings.push(blessing);
                 }
                 
-                updateProgress(10);
-                
-                // Create PDF content in smaller batches
+                                updateProgress(10);
+
+                // Создаём контент как реальные DOM-элементы
                 const pdfContent = document.getElementById('pdfContent');
-                let allPagesHTML = '';
-                
+                pdfContent.innerHTML = ''; // Очищаем
+
                 for (let i = 0; i < 30; i++) {
-                    allPagesHTML += createPageContent(i + 1, blessings[i], whatsapp, email);
-                    updateProgress(10 + (i / 30) * 30); // Progress from 10% to 40%
+                    const wrapper = document.createElement('div');
+                    wrapper.innerHTML = createPageContent(i + 1, blessings[i], whatsapp, email);
+                    const pageElement = wrapper.firstElementChild;
+                    pdfContent.appendChild(pageElement);
+                    updateProgress(10 + (i / 30) * 30); // Прогресс от 10% до 40%
                 }
-                
-                pdfContent.innerHTML = allPagesHTML;
-                
-                // Make content visible temporarily
+
+                // Делаем блок видимым для отрисовки
                 pdfContent.style.position = 'static';
                 pdfContent.style.left = 'auto';
                 pdfContent.style.top = 'auto';
                 pdfContent.style.visibility = 'visible';
-                
+
                 updateProgress(50);
-                
-                // Wait for content to render
-                await new Promise(resolve => setTimeout(resolve, 1000));
+
+                // Даем браузеру время отрисовать
+                await new Promise(resolve => setTimeout(resolve, 500));
+
                 
                 updateProgress(60);
                 
