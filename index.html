@@ -137,7 +137,7 @@
             width: 210mm;
             height: 297mm;
             padding: 15mm;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            background-color: #1a1a2e;
             color: white;
             font-family: Georgia, serif;
             position: relative;
@@ -145,19 +145,11 @@
             display: block;
             overflow: hidden;
             margin-bottom: 20px;
+            border: 1px solid #ffd700;
         }
 
         .pdf-background {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            opacity: 0.05;
-            background-image: 
-                radial-gradient(circle at 20% 20%, #ffd700 1px, transparent 1px),
-                radial-gradient(circle at 80% 80%, #ffd700 1px, transparent 1px);
-            background-size: 50px 50px;
+            display: none;
         }
 
         .pdf-header {
@@ -176,7 +168,7 @@
         }
 
         .transmission-section {
-            background: rgba(255, 215, 0, 0.1);
+            background-color: rgba(255, 215, 0, 0.1);
             border: 2px solid #ffd700;
             border-radius: 15px;
             padding: 20px;
@@ -197,6 +189,7 @@
             line-height: 1.6;
             margin-bottom: 10px;
             text-align: center;
+            color: white;
         }
 
         .lineage-note {
@@ -207,12 +200,13 @@
         }
 
         .divine-message {
-            background: rgba(0, 0, 0, 0.3);
+            background-color: rgba(0, 0, 0, 0.3);
             border-left: 4px solid #ffd700;
             padding: 15px;
             margin-bottom: 20px;
             font-size: 14px;
             line-height: 1.5;
+            color: white;
         }
 
         .intention-section, .signs-section, .gratitude-section {
@@ -233,12 +227,13 @@
         }
 
         .cta-section {
-            background: rgba(255, 215, 0, 0.05);
+            background-color: rgba(255, 215, 0, 0.05);
             border: 1px solid #ffd700;
             border-radius: 10px;
             padding: 15px;
             margin-top: 20px;
             text-align: center;
+            color: white;
         }
 
         .cta-title {
@@ -407,7 +402,12 @@
                 // Create PDF content
                 const pdfContent = document.getElementById('pdfContent');
                 pdfContent.innerHTML = '';
-                pdfContent.className = 'generating';
+                
+                // Make content visible for PDF generation
+                pdfContent.style.position = 'static';
+                pdfContent.style.left = 'auto';
+                pdfContent.style.top = 'auto';
+                pdfContent.style.visibility = 'visible';
                 
                 for (let i = 1; i <= 30; i++) {
                     const blessing = document.getElementById(`blessing${i}`).value;
@@ -417,10 +417,10 @@
                     
                     const page = document.createElement('div');
                     page.className = 'pdf-page';
+                    page.style.display = 'block';
+                    page.style.visibility = 'visible';
                     
                     page.innerHTML = `
-                        <div class="pdf-background"></div>
-                        
                         <div class="pdf-header">
                             <div class="day-title">🌟 DAY ${i} - ${dayOfWeek} 🌟</div>
                         </div>
@@ -444,9 +444,9 @@
                         
                         <div class="signs-section">
                             <div class="section-title">💰 ABUNDANCE SIGNS I NOTICED:</div>
-                            <div style="margin-bottom: 8px;">Morning: <span style="border-bottom: 1px solid #ffd700; display: inline-block; width: 200px; height: 16px;"></span></div>
-                            <div style="margin-bottom: 8px;">Afternoon: <span style="border-bottom: 1px solid #ffd700; display: inline-block; width: 200px; height: 16px;"></span></div>
-                            <div>Evening: <span style="border-bottom: 1px solid #ffd700; display: inline-block; width: 200px; height: 16px;"></span></div>
+                            <div style="margin-bottom: 8px; color: white;">Morning: <span style="border-bottom: 1px solid #ffd700; display: inline-block; width: 200px; height: 16px;"></span></div>
+                            <div style="margin-bottom: 8px; color: white;">Afternoon: <span style="border-bottom: 1px solid #ffd700; display: inline-block; width: 200px; height: 16px;"></span></div>
+                            <div style="color: white;">Evening: <span style="border-bottom: 1px solid #ffd700; display: inline-block; width: 200px; height: 16px;"></span></div>
                         </div>
                         
                         <div class="gratitude-section">
@@ -461,7 +461,7 @@
                             <div class="ps-note">✨ P.S. The fact that you felt drawn to page ${i} tells Maria everything about your spiritual readiness level... 😉</div>
                         </div>
                         
-                        ${i % 5 === 0 ? `<div style="margin-top: 15px; padding: 10px; background: rgba(255, 215, 0, 0.1); border-radius: 8px; text-align: center; font-size: 12px; color: #ffd700;">${trigger}</div>` : ''}
+                        ${i % 5 === 0 ? `<div style="margin-top: 15px; padding: 10px; background-color: rgba(255, 215, 0, 0.1); border-radius: 8px; text-align: center; font-size: 12px; color: #ffd700;">${trigger}</div>` : ''}
                         
                         <div class="watermark">
                             📧 ${email}<br>
@@ -475,19 +475,23 @@
                 }
                 
                 // Wait for content to render
-                await new Promise(resolve => setTimeout(resolve, 1000));
+                await new Promise(resolve => setTimeout(resolve, 2000));
                 
-                // Generate PDF
+                // Generate PDF with different settings
                 const opt = {
-                    margin: 0,
+                    margin: [5, 5, 5, 5],
                     filename: 'Sacred_Million_Dollar_Activation_Planner.pdf',
-                    image: { type: 'jpeg', quality: 0.98 },
+                    image: { 
+                        type: 'jpeg', 
+                        quality: 0.98 
+                    },
                     html2canvas: { 
-                        scale: 2,
+                        scale: 1,
                         useCORS: true,
-                        letterRendering: true,
-                        backgroundColor: null,
                         allowTaint: true,
+                        backgroundColor: '#1a1a2e',
+                        height: window.innerHeight,
+                        width: window.innerWidth,
                         scrollX: 0,
                         scrollY: 0
                     },
@@ -500,14 +504,18 @@
                 
                 await html2pdf().set(opt).from(pdfContent).save();
                 
-                // Clean up
-                pdfContent.innerHTML = '';
-                pdfContent.className = '';
-                
             } catch (error) {
                 console.error('PDF generation error:', error);
                 alert('Ошибка при генерации PDF. Попробуйте еще раз.');
             } finally {
+                // Clean up - hide content again
+                const pdfContent = document.getElementById('pdfContent');
+                pdfContent.innerHTML = '';
+                pdfContent.style.position = 'absolute';
+                pdfContent.style.left = '-9999px';
+                pdfContent.style.top = '-9999px';
+                pdfContent.style.visibility = 'hidden';
+                
                 // Re-enable button and hide loading
                 generateBtn.disabled = false;
                 loadingMessage.style.display = 'none';
